@@ -12,6 +12,11 @@ void dump_config()
   Serial.println("---------------");
 }
 
+void blink_error()
+{
+    digitalWrite(ledPin, !digitalRead(ledPin));
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -48,13 +53,20 @@ void setup()
     else
     {
       Serial.println("!!!CANNOT Write EEPROM!!!");
+      dump_config();
+      // fast blink
+      ticker.attach_ms(200, blink_error);
+      return;
     }
   }
 
   dump_config();
   wifi_begin();
+  server_begin();
 }
 
 void loop()
 {
+  // sensor runtime
+  server_loop();
 }

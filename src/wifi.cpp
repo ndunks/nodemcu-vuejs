@@ -15,10 +15,6 @@ void wifi_apmode()
     }
 }
 
-void wifi_blink_error()
-{
-    digitalWrite(ledPin, !digitalRead(ledPin));
-}
 
 void wifi_connect()
 {
@@ -41,7 +37,7 @@ void wifi_connect()
             Serial.println("TIMEOUT");
             WiFi.enableSTA(false);
             // Blink led indicate error
-            ticker.attach_ms(500, wifi_blink_error);
+            ticker.attach_ms(1000, blink_error);
             wifi_apmode();
         }
     }

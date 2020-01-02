@@ -17,8 +17,13 @@ struct Config {
 // main.c
 extern char device_id[9];
 extern Config *config;
+void blink_error();
 
-//  wifi.c
+//  wifi.cpp
 void wifi_begin();
+
+//  server.cpp
+void server_begin();
+void server_loop();
     
 
