@@ -17,6 +17,7 @@ struct Config {
 // main.c
 extern char device_id[9];
 extern Config *config;
+extern IPAddress local_IP;
 void blink_error();
 
 //  wifi.cpp

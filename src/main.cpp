@@ -5,6 +5,8 @@ Ticker ticker;
 char device_id[9] = {0};
 Config *config;
 
+IPAddress local_IP(192, 168, 4, 1);
+
 void dump_config()
 {
   Serial.printf("----Config----\n");
@@ -14,7 +16,7 @@ void dump_config()
 
 void blink_error()
 {
-    digitalWrite(ledPin, !digitalRead(ledPin));
+  digitalWrite(ledPin, !digitalRead(ledPin));
 }
 
 void setup()
@@ -44,6 +46,14 @@ void setup()
   if (!config->booted)
   {
     // First time boot
+    if (!WiFi.softAPConfig(local_IP, local_IP, IPAddress(255, 255, 255, 0)))
+    {
+      Serial.println("!!!CANNOT Setup softAP!!!");
+      // medium blink
+      ticker.attach_ms(500, blink_error);
+      return;
+    }
+    // Default config
     config->booted = true;
     strncpy(config->password, "admin", sizeof(config->password) - 1);
     if (EEPROM.commit())

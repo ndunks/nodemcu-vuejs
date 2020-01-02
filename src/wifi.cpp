@@ -1,20 +1,23 @@
 #include "header.h"
+
+
 void wifi_apmode()
 {
     // AP Mode
     char ssid[16] = {0};
     sprintf(ssid, "Wifi_%s", device_id);
-    if (WiFi.softAP(ssid, "12345678"))
+    if (WiFi.softAP(ssid))
     {
         Serial.print("AP ");
         Serial.println(ssid);
+        Serial.print("IP ");
+        Serial.println(WiFi.softAPIP());
     }
     else
     {
         Serial.println("AP ERROR");
     }
 }
-
 
 void wifi_connect()
 {
@@ -50,11 +53,12 @@ void wifi_begin()
     if (WiFi.SSID().length() > 0)
     {
         //Connect to saved
-        ticker.once_ms(100, wifi_connect);
+        wifi_connect();
     }
     else
     {
         Serial.println("No SSID saved, activating apmode");
-        ticker.once_ms(100, wifi_apmode);
+        wifi_apmode();
     }
 }
+
