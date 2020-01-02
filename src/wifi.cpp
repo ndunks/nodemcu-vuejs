@@ -49,10 +49,7 @@ void wifi_connect()
 
 void wifi_begin()
 {
-    // get chip id as device id
-    uint32 num = system_get_chip_id();
-    uint8 bytes[4] = {(byte)(num >> 24), (byte)(num >> 16), (byte)(num >> 8), (byte)num};
-    sprintf(device_id, "%02X%02X%02X%02X", bytes[0], bytes[1], bytes[2], bytes[3]);
+
     //Cek apakah sudah ada SSID tersimpan
     if (WiFi.SSID().length() > 0)
     {
