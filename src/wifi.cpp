@@ -1,22 +1,4 @@
 #include "header.h"
-// https://arduino-esp8266.readthedocs.io/en/latest/filesystem.html#flash-layout
-/* static const char *const status_text[] = {
-    "IDLE",
-    "CONNECTING",
-    "WRONG_PASSWORD",
-    "NO_AP_FOUND",
-    "CONNECT_FAIL",
-    "GOT_IP"};
-static const char *const mode_text[] = {
-    "OFF", "STA", "AP", "AP_STA",
-    //these two pseudo modes are experimental
-    "SHUTDOWN", "", "", "", "RESUME"};
- */
-
-
-station_config config;
-char device_id[9] = {0};
-
 void wifi_apmode()
 {
     // AP Mode

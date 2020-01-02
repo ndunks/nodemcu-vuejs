@@ -1,6 +1,7 @@
 #include <header.h>
 
 Ticker ticker;
+char device_id[9] = {0};
 
 void setup()
 {
