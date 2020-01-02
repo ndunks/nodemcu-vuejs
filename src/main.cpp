@@ -1,7 +1,16 @@
+#include <EEPROM.h>
 #include <header.h>
 
 Ticker ticker;
 char device_id[9] = {0};
+Config *config;
+
+void dump_config()
+{
+  Serial.printf("----Config----\n");
+  Serial.printf("boot: %d\nPassword: %s\n", config->booted, config->password);
+  Serial.println("---------------");
+}
 
 void setup()
 {
@@ -10,8 +19,6 @@ void setup()
   pinMode(ledPin, OUTPUT);
   pinMode(btnPin, INPUT);
   digitalWrite(ledPin, HIGH);
-
-  delay(600);
 
   // get chip id as device id
   uint32 num = system_get_chip_id();
@@ -24,6 +31,27 @@ void setup()
 
   Serial.printf("Device ID: %s\n", device_id);
 
+  // Setup EEPROM
+  EEPROM.begin(sizeof(Config));
+  config = (Config *)EEPROM.getDataPtr();
+  delay(1000);
+
+  if (!config->booted)
+  {
+    // First time boot
+    config->booted = true;
+    strncpy(config->password, "admin", sizeof(config->password) - 1);
+    if (EEPROM.commit())
+    {
+      Serial.println("initial config UPDATED");
+    }
+    else
+    {
+      Serial.println("!!!CANNOT Write EEPROM!!!");
+    }
+  }
+
+  dump_config();
   wifi_begin();
 }
 

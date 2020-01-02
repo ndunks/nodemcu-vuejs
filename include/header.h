@@ -7,9 +7,17 @@
 #define btnPin D8  // RX GPIO 03
 
 extern Ticker ticker;
+// Config that stored on EEPROM
+struct Config {
+    // max 8 char, 9 is null
+    bool booted;
+    char password[9];
+};
 
 // main.c
 extern char device_id[9];
+extern Config *config;
+
 //  wifi.c
 void wifi_begin();
     
