@@ -35,7 +35,7 @@ module.exports = {
             config.plugins.push(new CompressionPlugin({
                 algorithm: 'gzip',
                 deleteOriginalAssets: true,
-                exclude: /\.(ico|png|jpg)$/
+                exclude: /\.(png|jpg|woff2?)$/
             }))
         }
     },
@@ -51,7 +51,7 @@ module.exports = {
     css: {
         extract: {
             filename: '[hash:8].css',
-            chunkFilename: '[hash:8].css',
+            chunkFilename: '[name][hash:8].css',
         },
     }
 }
