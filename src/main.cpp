@@ -41,7 +41,6 @@ void setup()
   // Setup EEPROM
   EEPROM.begin(sizeof(Config));
   config = (Config *)EEPROM.getDataPtr();
-  delay(1000);
 
   if (!config->booted)
   {

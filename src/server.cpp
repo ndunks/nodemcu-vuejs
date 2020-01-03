@@ -29,6 +29,13 @@ void server_handler()
         server.sendHeader("Location", "http://wifi-setup.id/");
         server.send(302);
     });
+    server.on("/", []() {
+        digitalWrite(ledPin, LOW);
+        File f = SPIFFS.open("/index.html.gz", "r");
+        server.streamFile(f, "text/html");
+        f.close();
+        digitalWrite(ledPin, HIGH);
+    });
 
     server.on("/heap", HTTP_GET, []() {
         String body(String(ESP.getFreeHeap()));
@@ -153,12 +160,8 @@ void server_begin()
         ticker.attach_ms(200, blink_error);
         return;
     }
-    if (!SPIFFS.exists("/index.html"))
-    {
-        Serial.write("!! No /index.html\n");
-    }
+    
     server_handler();
-
     server.serveStatic("/", SPIFFS, "/", "public, max-age=86400");
     server.begin();
 }
