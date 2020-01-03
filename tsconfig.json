@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "esnext",
-    "strict": true,
-    "jsx": "preserve",
+    "strict": false,
     "importHelpers": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
@@ -16,7 +15,7 @@
     ],
     "paths": {
       "@/*": [
-        "src/*"
+        "src-web/*"
       ]
     },
     "lib": [
@@ -27,11 +26,8 @@
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "src-web/**/*.ts",
+    "src-web/**/*.vue",
   ],
   "exclude": [
     "node_modules"
