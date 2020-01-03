@@ -29,7 +29,7 @@ void server_begin()
     Serial.print("http://");
     Serial.print(WiFi.localIP());
     Serial.println("/");
-    dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
+    dnsServer.setErrorReplyCode(DNSReplyCode::Refused);
     dnsServer.start(53, "*", local_IP);
     if (!SPIFFS.begin())
     {
@@ -37,32 +37,49 @@ void server_begin()
         ticker.attach_ms(200, blink_error);
         return;
     }
-    if (SPIFFS.exists("/index.html"))
+    if (!SPIFFS.exists("/index.html"))
     {
-        Serial.write("Yes We Have /index.html\n");
+        Serial.write("!! No /index.html\n");
     }
-    server.onNotFound([]() {
-        String path = server.uri();
-        if (path.equals("/"))
-        {
-            path += "index.html";
-        }
+    // Captive portal
+    server.on("/hotspot-detect.html", []() {
+        server.sendHeader("Location", "http://wifi-setup.id/");
+        server.send(302);
+    });
 
-        Serial.print("handleFileRead: " + path);
+    server.onNotFound([]() {
         digitalWrite(ledPin, LOW);
-        if (SPIFFS.exists(path))
+        String host = server.hostHeader();
+        String path = server.uri();
+        Serial.printf("method %d: %s\n%s\n", server.method(), host.c_str(), path.c_str());
+        if (host.indexOf("apple") >= 0 || host.indexOf("google") >= 0 || host.indexOf("android") >= 0 || host.indexOf("gstatic") >= 0)
         {
-            // Todo: optimize cache control, load file from single bundle, GZIP!
-            File file = SPIFFS.open(path, "r");
-            size_t sent = server.streamFile(file, getContentType(path));
-            file.close();
-            Serial.printf(" %d\n", sent);
+            server.sendHeader("Location", "http://wifi-setup.id/");
+            server.send(302);
         }
         else
         {
-            server.send(404, "text/plain", "404: Ora Ketemu");
-            Serial.printf(" [NOTFOUND]\n");
+
+            if (path.equals("/"))
+            {
+                path += "index.html";
+            }
+            if (SPIFFS.exists(path))
+            {
+
+                // Todo: optimize cache control, load file from single bundle or pre GZIP!
+                File file = SPIFFS.open(path, "r");
+                size_t sent = server.streamFile(file, getContentType(path));
+                file.close();
+                Serial.printf(" %s [OK] %d\n", path.c_str(), sent);
+            }
+            else
+            {
+                server.send(404, "text/plain", "404: Ora Ketemu");
+                Serial.printf(" [NOTFOUND]\n");
+            }
         }
+
         digitalWrite(ledPin, HIGH);
     });
     server.begin();
