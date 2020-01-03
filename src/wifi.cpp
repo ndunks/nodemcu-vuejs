@@ -30,11 +30,12 @@ void wifi_connect()
         delay(1000);
         if (WiFi.status() == WL_CONNECTED)
         {
+            //WiFi.enableAP(false);
             Serial.println("OK");
             break;
         }
-        // Timeout 10 detik
-        if (++counter == 10)
+        // Timeout 20 detik
+        if (++counter == 20)
         {
             // Fail connect, fallback apmode
             Serial.println("TIMEOUT");
