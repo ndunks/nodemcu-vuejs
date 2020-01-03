@@ -18,3 +18,23 @@ static const char *const mode_text[] = {
     //these two pseudo modes are experimental
     "SHUTDOWN", "", "", "", "RESUME"};
 ```
+
+## WEB FRONTEND
+
+### Project setup
+```
+yarn install
+```
+
+### Compiles and hot-reloads for development
+```
+yarn serve
+```
+
+### Compiles and minifies for production
+```
+yarn build
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
