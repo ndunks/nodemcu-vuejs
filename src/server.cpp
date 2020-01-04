@@ -68,8 +68,8 @@ void server_handler()
         String body;
         int id = server.arg("id").toInt();
         String pass = server.arg("pass");
-        WiFi.persistent(true);
         wl_status_t state = WiFi.begin(WiFi.SSID(id).c_str(), pass.c_str(), WiFi.channel(id));
+        WiFi.setAutoConnect(true);
         server.send(200, "text/plain", String(state));
     });
 
