@@ -6,7 +6,7 @@ const mutations: {
 } = {
     loading(state, loading: boolean) {
         ///@ts-ignore
-        window.loading.counter += loading ? 1 : -1;
+        state.loading = (window.loading.counter += loading ? 1 : -1) > 0;
     },
     login(state, login: boolean) {
         state.login = login

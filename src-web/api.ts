@@ -22,16 +22,17 @@ Object.defineProperty(Api, 'password', {
     },
     set(value: string) {
         if (value) {
-            localStorage.setItem('password', password = value)
-            if( isProduction ){
+            password = value
+            localStorage.setItem('password', value)
+            //if (isProduction) {
                 Api.defaults.headers.Authorization = value;
-            }
+            //}
         } else {
             password = null;
             localStorage.removeItem('password');
-            if( isProduction ){
+            //if (isProduction) {
                 delete Api.defaults.headers.Authorization
-            }
+            //}
         }
     }
 })
@@ -49,8 +50,8 @@ function ApiErrorHandler(error) {
     store.commit('loading', false);
 
     store.commit('popup', {
-        message: error.isAxiosError ?
-            (error.response && error.response.data || error.response.statusText) :
+        message: (error.isAxiosError && error.response) ?
+            (error.response.data || error.response.statusText) :
             error.message,
         color: 'error'
     })
@@ -63,7 +64,7 @@ Api.interceptors.request.use(
     config => {
         store.commit('loading', true);
         // Use params to prevent cors, usually this app running on local, and api on nodeMCU
-        if (!isProduction && password ) {
+        if (!isProduction && password) {
             // We must set params.auth because Axios have bug
             // https://github.com/axios/axios/issues/1476#issuecomment-542958459
             config.params = config.params || {}
