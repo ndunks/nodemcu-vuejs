@@ -15,7 +15,6 @@ const routes = [
     meta: {
       title: 'Access System',
       public: true,
-      isLoginPage: true,
       hideMenu: true // Dont show in sidebar menu
     }
   },
@@ -24,7 +23,7 @@ const routes = [
     component: Dashboard,
     meta: {
       title: 'Dashboard',
-      icon: 'home'
+      icon: 'home',
     }
   },
   {
@@ -68,14 +67,19 @@ router.beforeEach(async (to, from, next) => {
   let nextPath: any = undefined
   if (store.state.login) {
     if (to.meta.isLoginPage) {
-      nextPath = '/'
+      nextPath = '/dash'
     }
   } else if (!to.meta.public) {
     store.commit('popup', {
       color: 'warning',
       message: 'Please login first'
     } as Popup)
-    nextPath = routes.find(v => v.meta.isLoginPage).path
+    nextPath = {
+      path: '/',
+      query: {
+        next: to.path
+      }
+    }
   }
   return next(nextPath)
 })

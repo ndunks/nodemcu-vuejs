@@ -23,7 +23,7 @@ const mutations: {
     popup(state, payload: Popup | string) {
         if (typeof payload != 'object') {
             payload = {
-                color: 'info',
+                color: 'warning',
                 message: payload
             } as Popup
         }

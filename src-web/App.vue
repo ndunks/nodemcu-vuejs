@@ -11,6 +11,16 @@
             <v-list-item-title v-text="item.meta.label || item.meta.title" />
           </v-list-item-content>
         </v-list-item>
+        <v-list-item v-if="login" @click="logout">
+          <v-list-item-action>
+            <v-icon>exit_to_app</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>
+              Logout
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -56,10 +66,11 @@
 import Vue from 'vue'
 import Component from 'vue-class-component';
 import { mapState } from 'vuex';
+import Api from './api';
 
 @Component({
   computed: {
-    ...mapState(['title', 'popups', 'bootComplete'])
+    ...mapState(['title', 'popups', 'bootComplete', 'login'])
   }
 })
 export default class App extends Vue {
@@ -70,5 +81,10 @@ export default class App extends Vue {
     )
   }
   drawer: boolean = null
+  logout() {
+    Api.password = null
+    this.$store.commit('login', false)
+    this.$router.push('/')
+  }
 }
 </script>

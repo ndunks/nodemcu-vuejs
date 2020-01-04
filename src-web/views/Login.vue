@@ -4,13 +4,13 @@
       <v-card>
         <v-card-title>Login</v-card-title>
         <v-card-text>
-          <v-form @submit="submit">
+          <v-form @submit.prevent="submit">
             <v-text-field hide-details v-model="password" label="Password" />
           </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn @click.stop="submit">Login</v-btn>
+          <v-btn @click.stop="submit" text color="success">Login</v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
@@ -27,20 +27,16 @@ export default class Login extends Vue {
   password: string = null
   submit() {
     if (!this.password) {
-      return this.$store.commit('popup', {
-        color: 'error',
-        message: 'Please input password'
-      } as Popup)
+      return this.$store.commit('popup', 'Please input password')
     }
     Api.password = this.password
+    console.log(Api);
     Api.get('ping').then(
-      resp => this.$store.commit('login', true)
-    ).catch(response => {
-      this.$store.commit('popup', {
-        color: 'error',
-        message: response.data
-      } as Popup)
-    })
+      resp => {
+        this.$store.commit('login', true)
+        this.$router.replace(this.$route.query.next as string || '/dash')
+      }
+    )
 
   }
 }
