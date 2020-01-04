@@ -6,6 +6,7 @@
 #include <EEPROM.h>
 #include <DNSServer.h>
 #include <FS.h>
+#include "controllers.h"
 
 #define ledPin D4
 #define btnPin D8 // RX GPIO 03
@@ -22,7 +23,15 @@ struct Config
     char password[9];
 };
 
-// main.c
+typedef void (*HandlerFunction)(String &response, HTTPMethod method);
+struct Controller
+{
+    const char *path;
+    HandlerFunction function;
+    bool mustLogin;
+};
+
+// main.cpp
 extern char device_id[7];
 extern Config *config;
 extern IPAddress local_IP;
@@ -31,13 +40,15 @@ void blink_error();
 //  server.cpp
 void server_begin();
 void server_loop();
+bool server_guard();
+extern ESP8266WebServer server;
 
-// api_handler.cpp
-
-class ApiHandler : public RequestHandler
+// handler.cpp
+// Api Handler
+class Handler : public RequestHandler
 {
 public:
-    ApiHandler(const char *uri = "/api")
+    Handler(const char *uri = "/api/")
         : prefix(uri)
     {
     }
@@ -48,3 +59,6 @@ protected:
     String prefix;
 };
 
+// routes.cpp
+extern struct Controller routes[];
+extern Controller *routeEnd;
