@@ -2,7 +2,7 @@
 #include <header.h>
 
 Ticker ticker;
-char device_id[9] = {0};
+char device_id[7] = {0};
 Config *config;
 
 IPAddress local_IP(192, 168, 4, 1);
@@ -30,8 +30,7 @@ void setup()
   // get chip id as device id
   uint32 num = system_get_chip_id();
   sprintf(device_id,
-          "%02X%02X%02X%02X",
-          (byte)(num >> 24),
+          "%02X%02X%02X",
           (byte)(num >> 16),
           (byte)(num >> 8),
           (byte)(num >> 0));
@@ -52,6 +51,7 @@ void setup()
       ticker.attach_ms(500, blink_error);
       return;
     }
+    WiFi.mode(WIFI_AP_STA);
     // Default config
     config->booted = true;
     strncpy(config->password, "admin", sizeof(config->password) - 1);
