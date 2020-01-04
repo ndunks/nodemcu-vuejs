@@ -1,22 +1,50 @@
 #include "header.h"
-
-
-void wifi_apmode()
+void wifi_smartconfig_watcher()
 {
-    // AP Mode
-    char ssid[16] = {0};
-    sprintf(ssid, "Wifi_%s", device_id);
+
+    if (WiFi.smartConfigDone())
+    {
+        Serial.println("WiFi SmartConfig Done");
+        ticker.detach();
+        digitalWrite(ledPin, HIGH);
+    }
+    else if (WiFi.isConnected())
+    {
+        WiFi.stopSmartConfig();
+        Serial.println("WiFi Connected, SmartConfig canceled.");
+        ticker.detach();
+        digitalWrite(ledPin, HIGH);
+    }
+    else
+    {
+        digitalWrite(ledPin, !digitalRead(ledPin));
+    }
+}
+void wifi_config_mode()
+{
+    // Custom AP Name by devide ID
+    String ssid("Wifi-");
+    ssid += device_id;
+    // Default is equal with hostname
     if (WiFi.softAP(ssid))
     {
         Serial.print("AP ");
-        Serial.println(ssid);
+        Serial.println(ssid.c_str());
         Serial.print("IP ");
         Serial.println(WiFi.softAPIP());
     }
     else
     {
-        Serial.println("AP ERROR");
+        Serial.printf("Fail set AP Name to: %s", ssid.c_str());
     }
+    ssid.clear();
+    if (ticker.active())
+    {
+        ticker.detach();
+    }
+    WiFi.beginSmartConfig();
+    Serial.println("SmartConfig Started");
+    ticker.attach(1.0f, wifi_smartconfig_watcher);
 }
 
 void wifi_connect()
@@ -41,8 +69,10 @@ void wifi_connect()
             Serial.println("TIMEOUT");
             WiFi.enableSTA(false);
             // Blink led indicate error
-            ticker.attach_ms(1000, blink_error);
-            wifi_apmode();
+            ticker.attach_ms(300, blink_error);
+            delay(1000);
+            wifi_config_mode();
+            break;
         }
     }
 }
@@ -59,7 +89,6 @@ void wifi_begin()
     else
     {
         Serial.println("No SSID saved, activating apmode");
-        wifi_apmode();
+        wifi_config_mode();
     }
 }
-

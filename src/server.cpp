@@ -11,7 +11,6 @@ char path[100] = {0};
 DNSServer dnsServer;
 bool server_islogin()
 {
-    Serial.printf("authorization %s %s", server.header("authorization").c_str(), server.header("Authorization").c_str());
     if (
         (server.hasHeader("authorization") && server.header("authorization").equals(config->password)) ||
         (server.hasArg("p") && server.arg("p").equals(config->password)))
