@@ -9,8 +9,11 @@ IPAddress local_IP(192, 168, 4, 1);
 
 void dump_config()
 {
+  //uint32_t eeprom_addr = 0x405fb000 - 0x40200000;
+
   Serial.printf("----Config----\n");
-  Serial.printf("boot: %d\nPassword: %s\n", config->booted, config->password);
+  Serial.printf("firstBoot: %d\nWeb Password: %s\n", config->firstBoot, config->password);
+  Serial.printf("WiFi Auto Connect: %d\nConfig Mem Address: %x\n", WiFi.getAutoConnect(), EEPROM.getConstDataPtr());
   Serial.println("---------------");
 }
 
@@ -41,7 +44,7 @@ void setup()
   EEPROM.begin(sizeof(Config));
   config = (Config *)EEPROM.getDataPtr();
 
-  if (!config->booted)
+  if (!config->firstBoot || config->firstBoot == 0xff )
   {
     // First time boot
     if (!WiFi.softAPConfig(local_IP, local_IP, IPAddress(255, 255, 255, 0)))
@@ -53,7 +56,7 @@ void setup()
     }
     WiFi.mode(WIFI_AP_STA);
     // Default config
-    config->booted = true;
+    config->firstBoot = false;
     strncpy(config->password, "admin", sizeof(config->password) - 1);
     if (EEPROM.commit())
     {

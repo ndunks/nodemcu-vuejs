@@ -10,7 +10,7 @@ extern Ticker ticker;
 // Config that stored on EEPROM
 struct Config {
     // max 8 char, 9 is null
-    bool booted;
+    bool firstBoot;
     char password[9];
 };
 
