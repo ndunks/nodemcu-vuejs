@@ -2,6 +2,10 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <Ticker.h>
+#include <ESP8266WebServer.h>
+#include <EEPROM.h>
+#include <DNSServer.h>
+#include <FS.h>
 
 #define ledPin D4
 #define btnPin D8 // RX GPIO 03
@@ -27,3 +31,20 @@ void blink_error();
 //  server.cpp
 void server_begin();
 void server_loop();
+
+// api_handler.cpp
+
+class ApiHandler : public RequestHandler
+{
+public:
+    ApiHandler(const char *uri = "/api")
+        : prefix(uri)
+    {
+    }
+    bool canHandle(HTTPMethod method, String uri);
+    bool handle(ESP8266WebServer &server, HTTPMethod requestMethod, String requestUri);
+
+protected:
+    String prefix;
+};
+

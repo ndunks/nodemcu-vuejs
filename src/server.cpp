@@ -1,14 +1,12 @@
 #include "header.h"
-#include <EEPROM.h>
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <FS.h>
 
 ESP8266WebServer server(80);
 WiFiClient client;
 char method[8] = {0};
 char path[100] = {0};
 DNSServer dnsServer;
+ApiHandler apiHandler;
+
 bool server_islogin()
 {
     if (
@@ -160,7 +158,7 @@ void server_begin()
         ticker.attach_ms(200, blink_error);
         return;
     }
-    
+    server.addHandler(&apiHandler);
     server_handler();
     server.serveStatic("/", SPIFFS, "/", "public, max-age=86400");
     server.begin();
