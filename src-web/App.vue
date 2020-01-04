@@ -3,26 +3,18 @@
   <v-app>
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
-        <v-list-item to="/">
+        <v-list-item v-for="item in menuList" :key="item.path" :to="item.path">
           <v-list-item-action>
-            <v-icon>home</v-icon>
+            <v-icon v-text="item.meta.icon" />
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Beranda</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item to="/about">
-          <v-list-item-action>
-            <v-icon>help</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Tentang</v-list-item-title>
+            <v-list-item-title v-text="item.meta.label || item.meta.title" />
           </v-list-item-content>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app>
+    <v-app-bar app short>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title"></v-toolbar-title>
     </v-app-bar>
@@ -71,6 +63,12 @@ import { mapState } from 'vuex';
   }
 })
 export default class App extends Vue {
+  get menuList(): any[] {
+    ///@ts-ignore
+    return (this.$router.options.routes as any[]).filter(
+      v => !v.meta.hideMenu
+    )
+  }
   drawer: boolean = null
 }
 </script>
