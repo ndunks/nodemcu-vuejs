@@ -10,11 +10,6 @@ void handle_index(String &response, HTTPMethod method)
     digitalWrite(ledPin, HIGH);
 }
 
-void handle_heap(String &response, HTTPMethod method)
-{
-    response += ESP.getFreeHeap();
-}
-
 void handle_gpio(String &response, HTTPMethod method)
 {
     response += String((uint32_t)(((GPI | GPO) & 0xFFFF) | ((GP16I & 0x01) << 16)));
@@ -23,22 +18,48 @@ void handle_gpio(String &response, HTTPMethod method)
 
 void handle_ping(String &response, HTTPMethod method)
 {
-    response = "OK";
+    response = server_guard();
+}
+
+void handle_status(String &response, HTTPMethod method)
+{
+    uint32_t hfree = 0;
+    uint16_t hmax = 0;
+    uint8_t hfrag = 0;
+    ESP.getHeapStats(&hfree, &hmax, &hfrag);
+    response += "mode\t";
+    response += WiFi.getMode();
+    response += "\nstatus\t";
+    response += WiFi.status();
+    response += "\nssid\t";
+    response += WiFi.SSID();
+    response += "\nrssi\t";
+    response += WiFi.RSSI();
+    response += "\nheap\t";
+    response += String(hfree) + " " + String(hmax) + " " + String(hfrag);
 }
 
 void handle_reboot(String &response, HTTPMethod method)
 {
-    system_restart();
-    response = "OK";
+    ESP.restart();
 }
 
-void handle_set_wifi(String &response, HTTPMethod method)
+void handle_wifi(String &response, HTTPMethod method)
 {
-    int id = server.arg("id").toInt();
-    String pass = server.arg("pass");
-    wl_status_t state = WiFi.begin(WiFi.SSID(id).c_str(), pass.c_str(), WiFi.channel(id));
-    WiFi.setAutoConnect(true);
-    response += String(state);
+
+    if (server.hasArg("connect"))
+    {
+        int id = server.arg("connect").toInt();
+        String pass = server.arg("pass");
+        wl_status_t state = WiFi.begin(WiFi.SSID(id).c_str(), pass.c_str(), WiFi.channel(id));
+        WiFi.setAutoConnect(true);
+        response = state;
+    }
+    else if (server.hasArg("disconnect"))
+    {
+        WiFi.setAutoConnect(false);
+        response = WiFi.disconnect(true);
+    }
 }
 
 void handle_set_password(String &response, HTTPMethod method)

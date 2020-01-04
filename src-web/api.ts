@@ -18,26 +18,20 @@ const Api: ApiAxios = Axios.create({
 
 Object.defineProperty(Api, 'password', {
     get() {
-        return password
+        return Api.defaults.headers.Authorization
     },
     set(value: string) {
         if (value) {
-            password = value
             localStorage.setItem('password', value)
-            //if (isProduction) {
-                Api.defaults.headers.Authorization = value;
-            //}
+            Api.defaults.headers.Authorization = value;
         } else {
-            password = null;
             localStorage.removeItem('password');
-            //if (isProduction) {
-                delete Api.defaults.headers.Authorization
-            //}
+            delete Api.defaults.headers.Authorization
         }
     }
 })
 // Auto set password
-let password = Api.password = localStorage.getItem('password')
+Api.password = localStorage.getItem('password')
 
 // Fix instance getUri https://github.com/axios/axios/issues/2468
 // PR not being merged: https://github.com/Alanscut/axios/commit/e8f54ad115fb63ae482c18951095fa7496d57501
@@ -63,13 +57,6 @@ function ApiErrorHandler(error) {
 Api.interceptors.request.use(
     config => {
         store.commit('loading', true);
-        // Use params to prevent cors, usually this app running on local, and api on nodeMCU
-        if (!isProduction && password) {
-            // We must set params.auth because Axios have bug
-            // https://github.com/axios/axios/issues/1476#issuecomment-542958459
-            config.params = config.params || {}
-            config.params.auth = password
-        }
         return config
     },
     ApiErrorHandler
