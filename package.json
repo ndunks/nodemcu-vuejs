@@ -8,6 +8,7 @@
     "deploy": "platformio run --target uploadfs",
     "device": "./tool/esptool.py --chip esp8266 --no-stub chip_id",
     "flash-id": "./tool/esptool.py --chip esp8266 --no-stub flash_id",
+    "dump-flash": "./tool/esptool.py --chip esp8266 read_flash 0x0 4194304 flash-dump.bin",
     "dump-config": "./tool/esptool.py --chip esp8266 read_flash 0x3fb000 10 config-dump.bin && xxd scratch/config-dump.bin",
     "flash-config": "./tool/esptool.py --chip esp8266 write_flash 0x3fb000 flash/config.bin"
   },
