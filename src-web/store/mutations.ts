@@ -8,8 +8,12 @@ const mutations: {
         ///@ts-ignore
         window.loading.counter += loading ? 1 : -1;
     },
+    login(state, login: boolean) {
+        state.login = login
+    },
     bootComplete(state) {
         state.bootComplete = true
+        //Default loading is 1 on page load, hide it now
         this.commit('loading', false);
     },
     title(state, payload: string) {

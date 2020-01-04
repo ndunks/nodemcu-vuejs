@@ -5,14 +5,12 @@ const actions: ActionTree<State, any> = {
     async boot(context) {
         // Delay test
         //await new Promise((r, j) => setTimeout( r, 3000))
-        let password = localStorage && localStorage.getItem('password');
-        if (password) {
-            Api.password = password;
-            await context.dispatch('ping').catch(
-                e => {
-                    Api.password = null
-                    localStorage.removeItem('password')
-                }
+        // Validating password
+        if (Api.password) {
+            await Api.get('ping').then(
+                resp => context.commit('login', true)
+            ).catch(
+                e => Api.password = null
             )
         }
         context.commit('bootComplete')

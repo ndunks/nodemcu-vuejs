@@ -4,13 +4,15 @@
 #include <Ticker.h>
 
 #define ledPin D4
-#define btnPin D8  // RX GPIO 03
+#define btnPin D8 // RX GPIO 03
 #define FLAG_IS_BOOTED 0x1
-
+// Debug HTTPServer
+#define DEBUG_ESP_HTTP_SERVER 1
 
 extern Ticker ticker;
 // Config that stored on EEPROM
-struct Config {
+struct Config
+{
     // max 8 char, 9 is null
     uint8 flag;
     char password[9];
@@ -25,5 +27,3 @@ void blink_error();
 //  server.cpp
 void server_begin();
 void server_loop();
-    
-

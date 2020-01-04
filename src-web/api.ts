@@ -16,16 +16,20 @@ const Api: ApiAxios = Axios.create({
 
 Object.defineProperty(Api, 'password', {
     get() {
-        return Api.defaults.headers.Authorization
+        return Api.defaults.params && Api.defaults.params.p
     },
     set(value: string) {
         if (value) {
-            Api.defaults.headers.Authorization = value
+            Api.defaults.params = { auth: value }
+            localStorage.setItem('password', value)
         } else {
-            delete Api.defaults.headers.Authorization;
+            localStorage.removeItem('password');
+            delete Api.defaults.params;
         }
     }
 })
+// Auto set password
+Api.password = localStorage.getItem('password');
 
 // Fix instance getUri https://github.com/axios/axios/issues/2468
 // PR not being merged: https://github.com/Alanscut/axios/commit/e8f54ad115fb63ae482c18951095fa7496d57501

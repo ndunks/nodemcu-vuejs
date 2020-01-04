@@ -13,7 +13,7 @@ bool server_islogin()
 {
     if (
         (server.hasHeader("authorization") && server.header("authorization").equals(config->password)) ||
-        (server.hasArg("p") && server.arg("p").equals(config->password)))
+        (server.hasArg("auth") && server.arg("auth").equals(config->password)))
     {
         return true;
     }
@@ -50,6 +50,7 @@ void server_handler()
     });
 
     server.on("/ping", HTTP_GET, []() {
+        server.sendHeader("Access-Control-Allow-Origin", "*");
         if (!server_islogin())
             return;
         server.send(200, "text/plain", "OK");
