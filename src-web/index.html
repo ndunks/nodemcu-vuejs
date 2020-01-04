@@ -1,17 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="/favicon.ico">
-    <title>WifiApp</title>
-  </head>
-  <body>
-    <noscript>
-      <strong>Tidak Support</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="/favicon.ico">
+  <title>WifiApp</title>
+</head>
+
+<body>
+  <div id="loading" class="loading">
+    <div class="line"></div>
+    <div class="subline inc"></div>
+  </div>
+  <script type="text/javascript">
+    VUE_APP_API = '<%= VUE_APP_API %>';
+    (function () {
+      var me = window.loading = {
+        el: document.getElementById('loading'),
+        _counter: 1,
+        get visible() {
+          return !me.el.classList.contains('hide')
+        },
+        get counter() {
+          return me._counter
+        },
+        set counter(val) {
+          me._counter = val < 0 ? 0 : val
+          if (me.visible) {
+            if (me._counter <= 0) {
+              me.el.classList.add('hide')
+            }
+          } else {
+            if (me._counter > 0) {
+              me.el.classList.remove('hide')
+            }
+          }
+        }
+      }
+    })()
+  </script>
+  <noscript>
+    <strong>Tidak Support</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+
 </html>

@@ -1,12 +1,12 @@
+import '@/style.scss'
+import '@/plugin'
 import Vue from 'vue'
+import router from "@/router";
+import store from "@/store";
 import App from './App.vue'
-import router from './router'
 import Vuetify from 'vuetify/lib'
-import '@/style.css'
 
 Vue.config.productionTip = false
-
-Vue.use(Vuetify);
 
 const vuetify = new Vuetify({
   icons: {
@@ -16,7 +16,9 @@ const vuetify = new Vuetify({
 
 new Vue({
   router,
-  ///@ts-ignore
+  store,
   vuetify,
   render: h => h(App)
-}).$mount('#app')
+} as any).$mount('#app')
+
+store.dispatch('boot')

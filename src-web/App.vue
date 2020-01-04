@@ -24,21 +24,52 @@
 
     <v-app-bar app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>Smart Device</v-toolbar-title>
+      <v-toolbar-title v-text="title"></v-toolbar-title>
     </v-app-bar>
 
     <v-content>
-      <router-view/>
+      <router-view v-if="bootComplete" />
+      <v-container v-else class="fill-height" fluid>
+        <v-row align="center" justify="center">
+          <v-progress-circular
+            indeterminate
+            size="96"
+            color="grey lighten-2"
+            class="mx-auto"
+          />
+        </v-row>
+      </v-container>
     </v-content>
     <v-footer color="indigo" app>
       <span class="white--text">&copy; 2020</span>
     </v-footer>
+    <div class="stacked-snackbar">
+      <v-snackbar
+        v-for="popup in popups"
+        :key="popup.id"
+        :color="popup.color"
+        v-model="popup.state"
+        :timeout="popup.timeout"
+        class="mt-2"
+      >
+        {{ popup.message }}
+        <v-btn icon @click="popup.state = false">
+          <v-icon>close</v-icon>
+        </v-btn>
+      </v-snackbar>
+    </div>
   </v-app>
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component';
-@Component
+import { mapState } from 'vuex';
+
+@Component({
+  computed: {
+    ...mapState(['title', 'popups', 'bootComplete'])
+  }
+})
 export default class App extends Vue {
   drawer: boolean = null
 }
