@@ -15,6 +15,8 @@ The NodeMCU v3 device features a 4 MB (32 Mb) flash memory organized in sectors 
 LD Config:
 https://github.com/esp8266/Arduino/blob/master/tools/sdk/ld/eagle.flash.4m2m.ld
 
+```SPI_FLASH_SEC_SIZE = 4096 = 4KB```
+
 ** Flash Split for 4M chips **
 
 | Name   | INFO             | Mem Offset | Flash Address | Size        |
@@ -25,6 +27,9 @@ https://github.com/esp8266/Arduino/blob/master/tools/sdk/ld/eagle.flash.4m2m.ld
 | eeprom | User Data        | 0x405FB000 | 0x003fb000    | (4KB) |
 | rfcal  | SDK              | 0x405FC000 | 0x003fc000    | (4KB) |
 | wifi   | SDK Wifi Config  | 0x405FD000 | 0x003fd000    | (12KB) |
+
+** May usefull sometime**
+```FREE_SPACE_AFTER_SKETCH=(ESP.getSketchSize() + FLASH_SECTOR_SIZE - 1) & (~(FLASH_SECTOR_SIZE - 1));```
 
 ## Some Code for debug
 ``` cpp
@@ -68,4 +73,6 @@ yarn deploy
 
 [ ] Scan And Connect to WiFi
 [ ] CaptivePortal Detection (may with custom handler)
+[ ] Self reset(Erase config and wifi config)
+
 

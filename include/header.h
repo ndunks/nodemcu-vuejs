@@ -9,7 +9,8 @@
 #include "controllers.h"
 
 #define ledPin D4
-#define btnPin D8 // RX GPIO 03
+//#define btnPin D8 // RX GPIO 03
+#define btnPin 0 // GPIO 0 / FLASH BUTTON
 #define FLAG_IS_BOOTED 0x1
 // Debug HTTPServer
 #define DEBUG_ESP_HTTP_SERVER 1
