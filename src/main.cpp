@@ -103,6 +103,12 @@ void resetConfigurationAndData()
   uint32 startSector = (0x405FB000 - 0x40200000) / SPI_FLASH_SEC_SIZE;
   uint32 sector = 0x0;
   Serial.println("--- DO ERASE CONFIG ----");
+  if (ticker.active())
+  {
+    ticker.detach();
+  }
+  ticker.attach_ms(200, blink_error);
+  delay(1000);
   //DELETE 5 Sector (EEPROM 1 sector, rfcal 1 sector, WIFI 3 Sectors)
   for (int i = 0; i < 5; i++)
   {
@@ -184,6 +190,9 @@ void loop()
     }
     else
     {
+      digitalWrite(ledPin, LOW);
+      delay(100);
+      digitalWrite(ledPin, HIGH);
       // begin pressed
       Serial.println("Will Reset data in 3 seconds");
       btnPressedAt = millis();

@@ -5,7 +5,7 @@
         <v-card-title>Login</v-card-title>
         <v-card-text>
           <v-form @submit.prevent="submit">
-            <v-text-field hide-details v-model="password" label="Password" />
+            <v-text-field type="password" hide-details v-model="password" label="Password" />
           </v-form>
         </v-card-text>
         <v-card-actions>

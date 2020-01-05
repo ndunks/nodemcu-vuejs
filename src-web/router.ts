@@ -74,11 +74,16 @@ router.beforeEach(async (to, from, next) => {
       color: 'warning',
       message: 'Please login first'
     } as Popup)
+    // check allowed path
+    let next = to.path;
+
+    if (routes.findIndex(v => v.path == next) < 0) {
+      next = '/dash'
+    }
+
     nextPath = {
       path: '/',
-      query: {
-        next: to.path
-      }
+      query: { next }
     }
   }
   return next(nextPath)

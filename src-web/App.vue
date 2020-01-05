@@ -26,14 +26,24 @@
 
     <v-app-bar app short>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>
-        {{ title }}
-      </v-toolbar-title>
+      <v-toolbar-title> {{ title }} {{ status.hostname }} </v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
-        <v-btn text v-if="status && status.hostname">
-          {{ status.hostname }}
-        </v-btn>
+        <v-dialog max-width="500" ref="connectDialog">
+          <template #activator="{on}">
+            <v-btn
+              v-on="on"
+              text
+              :color="status.isConnected ? 'success' : 'error'"
+            >
+              {{ status.isConnected ? status.ssid || "Connected" : "Connect" }}
+              <v-icon right>
+                {{ status.isConnected ? "wifi" : "wifi_off" }}
+              </v-icon>
+            </v-btn>
+          </template>
+          <WidgetConnect @done="$refs.connectDialog.isActive = false" />
+        </v-dialog>
       </v-toolbar-items>
     </v-app-bar>
 
@@ -75,10 +85,12 @@ import Vue from 'vue'
 import Component from 'vue-class-component';
 import { Watch } from "vue-property-decorator";
 import { mapState } from 'vuex';
-import Api from './api';
-import { Status } from './interfaces';
+import Api from '@/api';
+import { Status } from '@/interfaces';
+import WidgetConnect from "@/widget/WidgetConnect.vue";
 
 @Component({
+  components: { WidgetConnect },
   computed: mapState(['title', 'popups', 'bootComplete', 'login', 'status'])
 })
 export default class App extends Vue {

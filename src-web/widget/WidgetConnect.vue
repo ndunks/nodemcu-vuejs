@@ -20,7 +20,7 @@
       </v-list-item-content>
       <v-list-item-action>
         <v-btn
-          v-if="status.connected && status.ssid == wifi.ssid"
+          v-if="status.isConnected && status.ssid == wifi.ssid"
           @click="disconnect(wifi)"
           text
           color="error"
@@ -32,26 +32,31 @@
         </v-btn>
       </v-list-item-action>
     </v-list-item>
+    <DialogConfirm
+      :message="dialogMessage"
+      :title="dialogTitle"
+      :input-message="dialogInput"
+      v-model="dialogActions"
+    />
   </v-card>
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component';
-import { Popup, Status, WifiMode } from '../interfaces';
-import Api from '../api';
+import { Wifi, Status, ActionDialog } from '@/interfaces';
+import Api from '@/api';
 import { mapState } from 'vuex';
+import DialogConfirm from "@/dialog/DialogConfirm.vue";
 
 @Component({
   computed: mapState(['loading', 'status'])
 })
-export default class WidgetWifi extends Vue {
-  wifiList: {
-    id: number
-    ssid: string
-    security: string
-    signal: number
-  }[] = []
-
+export default class WidgetConnect extends Vue {
+  dialogTitle: string = null
+  dialogInput: string = null
+  dialogMessage: string = null
+  dialogActions: ActionDialog[] = null
+  wifiList: Wifi[] = []
   // Typing helper
   status: Status
 
@@ -78,11 +83,62 @@ export default class WidgetWifi extends Vue {
     )
   }
 
-  connect(wifi) {
+  connect(wifi: Wifi) {
+    const action = async (pass?: string) => {
+      await Api.get('wifi', {
+        params: {
+          connect: wifi.id,
+          pass
+        }
+      })
+      this.$store.dispatch('status')
+      this.$emit('done');
+    }
 
+    if (!this.status.isConnected) {
+      return action()
+    }
+    if (wifi.security != 'none') {
+      this.dialogInput = "Wifi password"
+    } else {
+      this.dialogInput = null
+    }
+    this.dialogTitle = `Connect to ${wifi.ssid}?`
+    this.dialogMessage = "Device IP may be changed and You may lost connection."
+    this.dialogActions = [
+      {
+        label: 'Cancel',
+        color: 'success'
+      },
+      'spacer',
+      {
+        label: `OK, Connect to ${wifi.ssid}`,
+        color: "error",
+        action
+      }
+    ]
   }
-  disconnect(wifi) {
 
+  disconnect(wifi: Wifi) {
+    this.dialogInput = null
+    this.dialogTitle = `Disconnect from ${wifi.ssid}?`
+    this.dialogMessage = "You may lost connection to this device."
+    this.dialogActions = [
+      {
+        label: 'Cancel',
+        color: 'success'
+      },
+      'spacer',
+      {
+        label: "OK, Disconnect it",
+        color: "error",
+        async action() {
+          await Api.get('wifi', { params: { disconnect: true } })
+          this.$store.dispatch('status')
+          this.$emit('done');
+        }
+      }
+    ]
   }
   mounted() {
     this.scan()

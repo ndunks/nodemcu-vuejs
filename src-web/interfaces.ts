@@ -4,6 +4,19 @@ export interface Popup {
     message: string
 }
 
+export interface Wifi {
+    id: number
+    ssid: string
+    security: 'none' | 'wep' | 'tkip' | 'ccmp' | 'auto'
+    signal: number
+}
+export interface ActionDialogObject {
+    label: string
+    action?: (inputValue?: string) => void
+    color?: string
+}
+
+export type ActionDialog = ActionDialogObject | string
 
 export interface ConfigRaw {
     heap: string

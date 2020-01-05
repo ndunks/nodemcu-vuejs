@@ -137,7 +137,7 @@ void handle_wifi(String &response, HTTPMethod method)
     else if (server.hasArg("disconnect"))
     {
         WiFi.setAutoConnect(false);
-        response = WiFi.disconnect(true);
+        response = WiFi.disconnect(false);
     }
     else if (server.hasArg("ap"))
     {
@@ -145,7 +145,14 @@ void handle_wifi(String &response, HTTPMethod method)
     }
     else if (server.hasArg("sta"))
     {
-        response = WiFi.enableSTA(server.arg("sta").equals("true"));
+        if (WiFi.disconnect(true))
+        {
+            response = WiFi.enableSTA(server.arg("sta").equals("true"));
+        }
+        else
+        {
+            response = "Failed";
+        }
     }
 }
 

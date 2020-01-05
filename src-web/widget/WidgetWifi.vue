@@ -5,7 +5,7 @@
       <span class="subtitle-1">{{ status.modeStr }} </span>
     </v-card-title>
     <v-subheader>Station Info</v-subheader>
-    <template v-if="isStaMode">
+    <template v-if="status.isStaMode">
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title>SSID</v-list-item-title>
@@ -22,12 +22,17 @@
           </v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
-          <v-btn color="error" text @click="disconnect">
+          <v-btn
+            color="error"
+            v-if="status.isConnected"
+            text
+            @click="setStaMode(false)"
+          >
             Disconnect
           </v-btn>
         </v-list-item-action>
       </v-list-item>
-      <v-list-item v-if="isConnected">
+      <v-list-item v-if="status.isConnected">
         <v-list-item-content>
           <v-list-item-title>Signal</v-list-item-title>
           <v-list-item-subtitle>
@@ -54,7 +59,7 @@
         </v-list-item-content>
       </v-list-item>
     </template>
-    <v-dialog v-else>
+    <v-dialog v-else max-width="500" ref="connectDialog">
       <template #activator="{on}">
         <v-list-item v-on="on">
           <v-list-item-content>
@@ -62,11 +67,11 @@
           </v-list-item-content>
         </v-list-item>
       </template>
-      <WidgetConnect />
+      <WidgetConnect @done="$refs.connectDialog.isActive = false" />
     </v-dialog>
 
     <v-subheader>Access Point Info</v-subheader>
-    <template v-if="isApMode">
+    <template v-if="status.isApMode">
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title>SSID</v-list-item-title>
@@ -112,55 +117,83 @@
         >
       </v-list-item-content>
     </v-list-item>
+    <DialogConfirm :message="dialogMessage" v-model="dialogActions" />
   </v-card>
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component';
-import { Status } from '@/interfaces';
+import { Status, ActionDialog } from '@/interfaces';
 import { mapState } from 'vuex';
 import WidgetConnect from "./WidgetConnect.vue";
-import Api from '../api';
+import DialogConfirm from "@/dialog/DialogConfirm.vue";
+import Api from '@/api';
 
 @Component({
-  components: { WidgetConnect },
+  components: { WidgetConnect, DialogConfirm },
   computed: mapState(['loading', 'status'])
 })
 export default class WidgetWifi extends Vue {
-
+  dialogMessage: string = null
+  dialogActions: ActionDialog[] = null
   // Typing helper
   status: Status
 
-  get isStaMode(): boolean {
-    return this.status.isStaMode
-  }
-  get isConnected(): boolean {
-    return this.status.isConnected
-  }
-  get isApMode(): boolean {
-    return this.status.isApMode
-  }
   /** Disconect STA */
-  disconnect() {
-    if (!confirm("Are you sure? you may lost connection to this device.")) {
-      return;
+  setStaMode(enable: boolean) {
+    const action = () => {
+      Api.get('wifi', {
+        params: {
+          sta: true
+        }
+      }).then(response => this.$store.dispatch('status'))
     }
-    Api.get('wifi', {
-      params: {
-        disconnect: true
+    if (enable) {
+      // No confirmation
+      return action();
+    }
+
+    this.dialogMessage = "You may lost connection to this device.";
+    this.dialogActions = [
+      {
+        label: 'Cancel',
+        color: 'success'
+      },
+      'spacer',
+      {
+        label: "OK, Disconnect it",
+        color: "error",
+        action
       }
-    }).then(response => this.$store.dispatch('status'))
+    ]
   }
   /** Disable AP Mode */
   setApMode(enable: boolean) {
-    if (!enable && !confirm("Are you sure? you may lost connection to this device.")) {
-      return;
+    const action = () => {
+      Api.get('wifi', {
+        params: {
+          ap: enable
+        }
+      }).then(response => this.$store.dispatch('status'))
     }
-    Api.get('wifi', {
-      params: {
-        ap: enable
+    if (enable) {
+      // No confirmation
+      return action();
+    }
+
+    this.dialogMessage = "You may lost connection to this device.";
+    this.dialogActions = [
+      {
+        label: 'Cancel',
+        color: 'success'
+      },
+      'spacer',
+      {
+        label: "OK, Disable it",
+        color: "error",
+        action
       }
-    }).then(response => this.$store.dispatch('status'))
+    ]
   }
 }
 </script>
