@@ -38,7 +38,7 @@
             >
               {{ status.isConnected ? status.ssid || "Connected" : "Connect" }}
               <v-icon right>
-                {{ status.isConnected ? "wifi" : "wifi_off" }}
+                {{ status.isConnected ? "wifi" : "signal_wifi_4_bar" }}
               </v-icon>
             </v-btn>
           </template>
