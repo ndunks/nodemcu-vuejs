@@ -98,6 +98,28 @@ void firstboot()
   dump_config();
 }
 
+void resetConfigurationAndData()
+{
+  uint32 startSector = (0x405FB000 - 0x40200000) / SPI_FLASH_SEC_SIZE;
+  uint32 sector = 0x0;
+  Serial.println("--- DO ERASE CONFIG ----");
+  //DELETE 5 Sector (EEPROM 1 sector, rfcal 1 sector, WIFI 3 Sectors)
+  for (int i = 0; i < 5; i++)
+  {
+    sector = startSector + i;
+    Serial.printf("%08X ... ", sector);
+    if (ESP.flashEraseSector(sector))
+    {
+      Serial.println("OK");
+    }
+    else
+    {
+      Serial.println("FAILED");
+    }
+  }
+  Serial.println("REBOOTING...\n");
+  ESP.restart();
+}
 void setup()
 {
   Serial.begin(115200);
@@ -146,79 +168,30 @@ void setup()
     }
   }
   server_begin();
-
-  // uint32_t wifiSector = (((uint32_t)0x405FD000 - 0x40200000) / SPI_FLASH_SEC_SIZE);
-  // Serial.printf("SPI_FLASH_SEC_SIZE %d\n", SPI_FLASH_SEC_SIZE);
-  // Serial.printf("EEPROM.length() %d\n", EEPROM.length());
-  // Serial.printf("WifiSector %d %08X\n", wifiSector, wifiSector);
-  
 }
-void resetConfigurationAndData()
-{
-  uint32 startSector = 0x003fb000;
-  uint32 sector = 0x0;
-  Serial.println("--- DO ERASE CONFIG ----");
-  //DELETE 5 Sector
-  for (int i = 0; i < 5; i++)
-  {
-    sector = startSector + SPI_FLASH_SEC_SIZE * i;
-    Serial.printf("%08X ... ", sector);
-    if (ESP.flashEraseSector(sector))
-    {
-      Serial.println("OK");
-    }
-    else
-    {
-      Serial.println("FAILED");
-    }
-  }
-  Serial.println("REBOOTING...\n");
 
-  /*
-  for (uint i = 0; i < EEPROM.length(); i++)
-  {
-    Serial.printf(" %02X %c", EEPROM.read(i), (char)EEPROM.read(i));
-    //EEPROM.write(i, -1);
-  }
-  //EEPROM.commit();
-  Serial.println();
-  //SPI_FLASH_SEC_SIZE
-  uint configStart = 0x003fb000;
-  int configSize = 1024; */
-  // just used area, all size is 1024 * 4
-  /* uint8_t * buffer;
-  for (int i = 0; i < configSize; i++)
-  {
-    Serial.printf("%02X %c", buffer[i], (char)buffer[i]);
-    if (i % 16 == 0)
-    {
-      Serial.println();
-    }
-  } */
-}
 void loop()
 {
-  // Detect reset action, press for 5 seconds
+  // Detect reset action, press for 3 seconds
   if (digitalRead(btnPin) != btnState)
   {
     btnState = digitalRead(btnPin);
     if (btnState == HIGH)
     {
       // released
-      Serial.printf("btn released after %lu\n", (millis() - btnPressedAt) / 1000UL);
+      Serial.printf("Reset Canceled after %lu\n", (millis() - btnPressedAt) / 1000UL);
       btnPressedAt = 0;
     }
     else
     {
       // begin pressed
-      Serial.println("PRESSED");
+      Serial.println("Will Reset data in 3 seconds");
       btnPressedAt = millis();
     }
   }
-  else if (btnPressedAt > 0 && (millis() - btnPressedAt) >= 5000)
+  else if (btnPressedAt > 0 && (millis() - btnPressedAt) >= 3000)
   {
-    Serial.println("Do Reset!!");
-    btnPressedAt = 0;
+    //Do Reset!!
     resetConfigurationAndData();
   }
   // sensor runtime

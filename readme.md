@@ -19,15 +19,16 @@ https://github.com/esp8266/Arduino/blob/master/tools/sdk/ld/eagle.flash.4m2m.ld
 
 ** Flash Split for 4M chips **
 
-| Name   | INFO             | Mem Offset | Flash Address | Size        |
-|--------|------------------|------------|---------------|-------------|
-| sketch | Program (Code)   | 0x40200000 | 0x00000000    | (~1019KB) (1044464B) |
-| empty  | OTA?             | 0x402FEFF0 | 0x000feff0    | (~1028KB) (1052688B) |
-| spiffs | Web File         | 0x40400000 | 0x00200000    | (~2024KB) (2072576B) |
-| eeprom | User Data        | 0x405FB000 | 0x003fb000    | (4KB) |
-| rfcal  | SDK              | 0x405FC000 | 0x003fc000    | (4KB) |
-| wifi   | SDK Wifi Config  | 0x405FD000 | 0x003fd000    | (12KB) |
+| Name   | INFO             | Mem Offset | Flash Address | Sector|         Size         |
+|--------|------------------|------------|---------------|-------|----------------------|
+| sketch | Program (Code)   | 0x40200000 | 0x00000000    | 0x000 | (~1019KB) (1044464B) |
+| empty  | OTA?             | 0x402FEFF0 | 0x000feff0    | 0x0fe | (~1028KB) (1052688B) |
+| spiffs | Web File         | 0x40400000 | 0x00200000    | 0x200 | (~2024KB) (2072576B) |
+| eeprom | User Data        | 0x405FB000 | 0x003fb000    | 0x3fb | (4KB)                |
+| rfcal  | SDK              | 0x405FC000 | 0x003fc000    | 0x3fc | (4KB)                |
+| wifi   | SDK Wifi Config  | 0x405FD000 | 0x003fd000    | 0x3fd | (12KB)               |
 
+To get Sector Address: ``` FLASH Addres / SECTOR_SIZE ```
 ** May usefull sometime**
 ```FREE_SPACE_AFTER_SKETCH=(ESP.getSketchSize() + FLASH_SECTOR_SIZE - 1) & (~(FLASH_SECTOR_SIZE - 1));```
 
@@ -73,6 +74,6 @@ yarn deploy
 
 [ ] Scan And Connect to WiFi
 [ ] CaptivePortal Detection (may with custom handler)
-[ ] Self reset(Erase config and wifi config)
+[x] Self reset(Erase config and wifi config)
 
 
