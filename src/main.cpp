@@ -72,8 +72,8 @@ void firstboot()
     Serial.println("Error: CANNOT Setup softAP SSID");
     ticker.attach_ms(500, blink_error);
   }
-
-  WiFi.mode(WIFI_AP_STA);
+  WiFi.enableSTA(false);
+  WiFi.mode(WIFI_AP);
   WiFi.setAutoConnect(false);
 
   if (config->password[0] == 0 || config->password[0] == 0xff)

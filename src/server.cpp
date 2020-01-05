@@ -50,7 +50,7 @@ void server_begin()
         else
         {
             server.sendHeader("Location", "http://" + WiFi.hostname());
-            server.send(302, "text/plain");
+            server.send(302, "text/html", "Redirecting...");
             Serial.println("Redirected");
         }
     });
