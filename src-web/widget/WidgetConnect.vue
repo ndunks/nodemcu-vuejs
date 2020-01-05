@@ -99,8 +99,13 @@ export default class WidgetConnect extends Vue {
           pass
         }
       })
-      this.$store.dispatch('status')
-      this.$emit('done');
+      this.$store.commit('loading', true);
+      setTimeout(() => {
+        this.$store.dispatch('status')
+        this.$store.commit('loading', false);
+        this.$emit('done');
+      }, 3000)
+
     }
 
     if (!this.status.isConnected && wifi.security == 'none') {
@@ -116,12 +121,12 @@ export default class WidgetConnect extends Vue {
     this.dialogActions = [
       {
         label: 'Cancel',
-        color: 'success'
+        color: 'error'
       },
       'spacer',
       {
         label: `OK, Connect to ${wifi.ssid}`,
-        color: "error",
+        color: "success",
         action
       }
     ]
