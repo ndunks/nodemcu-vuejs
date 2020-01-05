@@ -62,3 +62,10 @@ yarn build
 ```
 yarn deploy
 ```
+    If not work, use platformio menu on your IDE(Upload File System Image)
+
+## TODO
+
+[ ] Scan And Connect to WiFi
+[ ] CaptivePortal Detection (may with custom handler)
+
