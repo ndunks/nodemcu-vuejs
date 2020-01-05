@@ -136,8 +136,9 @@ void handle_wifi(String &response, HTTPMethod method)
     }
     else if (server.hasArg("disconnect"))
     {
-        WiFi.setAutoConnect(false);
+        WiFi.persistent(false);
         response = WiFi.disconnect(false);
+        WiFi.persistent(true);
     }
     else if (server.hasArg("ap"))
     {
