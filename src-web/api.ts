@@ -22,16 +22,16 @@ Object.defineProperty(Api, 'password', {
     },
     set(value: string) {
         if (value) {
-            localStorage.setItem('password', value)
+            window['localStorage'] && localStorage.setItem && localStorage.setItem('password', value)
             Api.defaults.headers.Authorization = value;
         } else {
-            localStorage.removeItem('password');
+            window['localStorage'] && localStorage.removeItem && localStorage.removeItem('password');
             delete Api.defaults.headers.Authorization
         }
     }
 })
 // Auto set password
-Api.password = localStorage.getItem('password')
+Api.password = window['localStorage'] && localStorage.getItem && localStorage.getItem('password')
 
 // Fix instance getUri https://github.com/axios/axios/issues/2468
 // PR not being merged: https://github.com/Alanscut/axios/commit/e8f54ad115fb63ae482c18951095fa7496d57501

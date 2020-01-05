@@ -26,7 +26,7 @@ void server_begin()
     Serial.print("http://");
     Serial.print(WiFi.localIP());
     Serial.println("/");
-    dnsServer.setErrorReplyCode(DNSReplyCode::Refused);
+    dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
     dnsServer.start(53, "*", local_IP);
     if (!SPIFFS.begin())
     {
@@ -51,7 +51,7 @@ void server_begin()
         else
         {
             server.sendHeader("Location", "http://" + WiFi.hostname() + "/");
-            server.send(302, "text/html", "Redirecting...");
+            server.send(302, "text/plain", "Redirecting...");
             Serial.println("Handled Captive Portal");
         }
     });
