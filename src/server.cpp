@@ -51,7 +51,7 @@ void server_begin()
         else
         {
             server.sendHeader("Location", "http://" + WiFi.hostname() + "/");
-            server.send(302, "text/plain", "Redirecting...");
+            server.send(302);
             Serial.println("Handled Captive Portal");
         }
     });
