@@ -25,7 +25,7 @@ bool Handler::handle(ESP8266WebServer &server, HTTPMethod method, String path)
         server.sendHeader("Access-Control-Allow-Headers", "*");
         // 60 * 60 * 60 * 30 = 6480000
         server.sendHeader("Access-Control-Max-Age", "6480000");
-        server.send(204, "text/plain");
+        server.send(200, "text/plain");
         return true;
     }
     String response;
