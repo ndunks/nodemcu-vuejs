@@ -20,23 +20,98 @@ void handle_ping(String &response, HTTPMethod method)
 {
     response = server_guard();
 }
-
+// Status will periodically called by frontend, make it cheap
 void handle_status(String &response, HTTPMethod method)
 {
     uint32_t hfree = 0;
     uint16_t hmax = 0;
     uint8_t hfrag = 0;
+    WiFiMode_t mode = WiFi.getMode();
     ESP.getHeapStats(&hfree, &hmax, &hfrag);
-    response += "mode\t";
-    response += WiFi.getMode();
-    response += "\nstatus\t";
-    response += WiFi.status();
-    response += "\nssid\t";
-    response += WiFi.SSID();
-    response += "\nrssi\t";
-    response += WiFi.RSSI();
-    response += "\nheap\t";
+    response += "heap\t";
     response += String(hfree) + " " + String(hmax) + " " + String(hfrag);
+    if ((mode & WIFI_STA))
+    {
+        wl_status_t status = WiFi.status();
+        response += "\nstatus\t";
+        response += status;
+        if (status == WL_CONNECTED)
+        {
+            response += "\nrssi\t";
+            response += WiFi.RSSI();
+        }
+    }
+    if ((mode & WIFI_AP))
+    {
+        response += "\nap_clients\t";
+        response += WiFi.softAPgetStationNum();
+    }
+}
+
+// A supertset of Status with more detail, loaded onetime from frontend at first page load
+// Also used on config dialog to display initial/current value
+void handle_config_get(String &response, HTTPMethod method)
+{
+    uint32_t hfree = 0;
+    uint16_t hmax = 0;
+    uint8_t hfrag = 0;
+    WiFiMode_t mode = WiFi.getMode();
+    ESP.getHeapStats(&hfree, &hmax, &hfrag);
+    response += "heap\t";
+    response += String(hfree) + " " + String(hmax) + " " + String(hfrag);
+    response += "\nmode\t";
+    response += mode;
+    response += "\nhostname\t";
+    response += WiFi.hostname();
+    response += "\nautoconnect\t";
+    response += WiFi.getAutoConnect();
+    if ((mode & WIFI_STA))
+    {
+        wl_status_t status = WiFi.status();
+        response += "\nstatus\t";
+        response += status;
+        response += "\nssid\t";
+        response += WiFi.SSID();
+        if (status == WL_CONNECTED)
+        {
+            response += "\nrssi\t";
+            response += WiFi.RSSI();
+            response += "\nip\t";
+            response += WiFi.localIP().toString();
+            response += "\ngateway\t";
+            response += WiFi.gatewayIP().toString();
+        }
+    }
+    if ((mode & WIFI_AP))
+    {
+        response += "\nap_ssid\t";
+        response += WiFi.softAPSSID();
+        response += "\nap_ip\t";
+        response += WiFi.softAPIP().toString();
+        response += "\nap_psk\t";
+        response += WiFi.softAPPSK();
+        response += "\nap_clients\t";
+        response += WiFi.softAPgetStationNum();
+    }
+}
+
+void handle_config_set(String &response, HTTPMethod method)
+{
+    //Todo: will you contribute?
+}
+
+void handle_config(String &response, HTTPMethod method)
+{
+    if (method == HTTP_GET)
+    {
+        handle_config_get(response, method);
+    }
+    else if( server_guard() )
+    {
+        handle_config_set(response, method);
+    }else{
+        response = "Disallowed";
+    }
 }
 
 void handle_reboot(String &response, HTTPMethod method)

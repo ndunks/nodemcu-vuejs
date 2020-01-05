@@ -5,7 +5,8 @@ Ticker ticker;
 char device_id[7] = {0};
 Config *config;
 
-IPAddress local_IP(192, 168, 1, 1);
+// Local IP on AP Mode
+IPAddress local_IP(192, 168, 4, 1);
 
 void dump_config()
 {
@@ -51,11 +52,12 @@ void wifisetupmode()
 
 void firstboot()
 {
-  String ssid("Wifi-");
+  String ssid("smart-");
   ssid += device_id;
 
   Serial.println("--- FIRST BOOT ---");
   Serial.printf("Device ID: %s\n", device_id);
+  WiFi.hostname(ssid.c_str());
 
   if (!WiFi.softAPConfig(local_IP, local_IP, IPAddress(255, 255, 255, 0)))
   {

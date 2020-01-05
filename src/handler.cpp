@@ -41,7 +41,7 @@ bool Handler::handle(ESP8266WebServer &server, HTTPMethod method, String path)
         {
             if (matched->mustLogin && !server_guard())
             {
-                server.send(403, "text/plain", "Unauthorized");
+                // blocked
                 return true;
             }
             matched->function(response, method);

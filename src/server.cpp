@@ -16,6 +16,7 @@ bool server_guard()
         return true;
     }
     Serial.println("Blocked by GUARD");
+    server.send(403, "text/plain", "Unauthorized");
     return false;
 }
 

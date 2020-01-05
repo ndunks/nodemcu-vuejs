@@ -26,7 +26,15 @@
 
     <v-app-bar app short>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title v-text="title"></v-toolbar-title>
+      <v-toolbar-title>
+        {{ title }}
+      </v-toolbar-title>
+      <v-spacer />
+      <v-toolbar-items>
+        <v-btn text v-if="status && status.hostname">
+          {{ status.hostname }}
+        </v-btn>
+      </v-toolbar-items>
     </v-app-bar>
 
     <v-content>
@@ -70,7 +78,7 @@ import Api from './api';
 
 @Component({
   computed: {
-    ...mapState(['title', 'popups', 'bootComplete', 'login'])
+    ...mapState(['title', 'popups', 'bootComplete', 'login', 'status'])
   }
 })
 export default class App extends Vue {

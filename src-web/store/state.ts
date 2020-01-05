@@ -1,4 +1,4 @@
-import { Popup } from '@/interfaces';
+import { Popup, Status } from '@/interfaces';
 
 const state: {
     bootComplete: boolean
@@ -6,12 +6,14 @@ const state: {
     loading: boolean
     title: string
     popups: Popup[]
+    status: Status
 } = {
     bootComplete: false,
     login: false,
     loading: false,
     title: 'Smart Device..',
-    popups: []
+    popups: [],
+    status: {} as any
 }
 
 export default state
