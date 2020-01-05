@@ -38,7 +38,10 @@
     </v-app-bar>
 
     <v-content>
-      <router-view v-if="bootComplete" />
+      <router-view
+        v-if="bootComplete"
+        :connect-dialog.sync="connectDialogVisible"
+      />
       <v-container v-else class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-progress-circular
@@ -70,15 +73,17 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component';
+import { Watch } from "vue-property-decorator";
 import { mapState } from 'vuex';
 import Api from './api';
+import { Status } from './interfaces';
 
 @Component({
-  computed: {
-    ...mapState(['title', 'popups', 'bootComplete', 'login', 'status'])
-  }
+  computed: mapState(['title', 'popups', 'bootComplete', 'login', 'status'])
 })
 export default class App extends Vue {
+  connectDialogVisible: boolean = null
+
   get menuList(): any[] {
     ///@ts-ignore
     return (this.$router.options.routes as any[]).filter(
@@ -86,10 +91,32 @@ export default class App extends Vue {
     )
   }
   drawer: boolean = null
+
+  // Typing helper
+  status: Status
+
   logout() {
     Api.password = null
     this.$store.commit('login', false)
     this.$router.push('/')
+  }
+  mounted() {
+    setTimeout(() => this.statusChecker(), 5000)
+  }
+
+  @Watch('status.mode')
+  modeChanged(newMode, oldMode) {
+
+    if ('undefined' == typeof oldMode) return;
+    // if mode changed, load full config
+    this.$store.dispatch('config')
+  }
+
+
+  statusChecker() {
+    this.$store.dispatch("status").then(
+      () => setTimeout(() => this.statusChecker(), 5000)
+    )
   }
 }
 </script>

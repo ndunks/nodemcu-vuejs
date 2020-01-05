@@ -1,5 +1,6 @@
 import { Store } from 'vuex'
 import { Popup, StatusRaw, WifiMode, WifiStatus, ConfigRaw, isConfigRaw } from '@/interfaces';
+import { parseResponse } from '@/helper';
 
 const mutations: {
     [name: string]: (this: Store<State>, state: State, payload?: any) => any
@@ -44,36 +45,38 @@ const mutations: {
             state.popups.splice(index, 1)
         }
     },
-    status(state, payload: StatusRaw | ConfigRaw) {
-        const [free, max, frag] = payload.heap.split(' ', 3)
-        state.status.heap = {
+    status(state, payload: string) {
+        const raw = parseResponse<StatusRaw | ConfigRaw>(payload);
+        const newStatus = { ...state.status };
+
+        const [free, max, frag] = raw.heap.split(' ', 3)
+        newStatus.heap = {
             free: parseInt(free),
             max: parseInt(max),
             frag: parseInt(frag)
         }
-        state.status.status = parseInt(payload.status)
-        state.status.statusStr = WifiStatus[state.status.status]
-        state.status.rssi = parseInt(payload.rssi)
-        state.status.signal = 100 + parseInt(payload.rssi)
-        state.status.ap_clients = parseInt(payload.ap_clients)
-        state.status.isConnected = state.status.status == WifiStatus.Connected
+        newStatus.mode = parseInt(raw.mode)
+        newStatus.modeStr = WifiMode[newStatus.mode]
+        newStatus.status = parseInt(raw.status)
+        newStatus.statusStr = WifiStatus[newStatus.status]
+        newStatus.rssi = parseInt(raw.rssi)
+        newStatus.signal = 100 + parseInt(raw.rssi)
+        newStatus.ap_clients = parseInt(raw.ap_clients)
+        newStatus.isConnected = newStatus.status == WifiStatus.Connected
 
-        if (!isConfigRaw(payload))
-            return;
-
-        state.status.mode = parseInt(payload.mode)
-        state.status.modeStr = WifiMode[state.status.mode]
-        state.status.hostname = payload.hostname
-        state.status.autoconnect = parseInt(payload.autoconnect) > 0
-        state.status.ssid = payload.ssid
-        state.status.ip = payload.ip
-        state.status.gateway = payload.gateway
-        state.status.ap_ssid = payload.ap_ssid
-        state.status.ap_ip = payload.ap_ip
-        state.status.ap_psk = payload.ap_psk
-        //console.log(state.status.mode, WifiMode["Access Point"], state.status.mode & WifiMode["Access Point"])
-        state.status.isApMode = !!(state.status.mode & WifiMode["Access Point"])
-        state.status.isStaMode = !!(state.status.mode & WifiMode.Station)
+        if (isConfigRaw(raw)) {
+            newStatus.hostname = raw.hostname
+            newStatus.autoconnect = parseInt(raw.autoconnect) > 0
+            newStatus.ssid = raw.ssid
+            newStatus.ip = raw.ip
+            newStatus.gateway = raw.gateway
+            newStatus.ap_ssid = raw.ap_ssid
+            newStatus.ap_ip = raw.ap_ip
+            newStatus.ap_psk = raw.ap_psk
+            newStatus.isApMode = !!(newStatus.mode & WifiMode["Access Point"])
+            newStatus.isStaMode = !!(newStatus.mode & WifiMode.Station)
+        }
+        this.state.status = newStatus;
     }
 }
 export default mutations;

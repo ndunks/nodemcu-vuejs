@@ -1,11 +1,11 @@
 import { ActionTree } from 'vuex'
 import Api from '@/api'
-import { parseResponse } from '@/helper'
+import Axios, { AxiosInstance } from 'axios'
+let ApiNoLoading: AxiosInstance;
 
 const actions: ActionTree<State, any> = {
     async boot(context) {
-        // Delay test
-        //await new Promise((r, j) => setTimeout( r, 3000))
+        ApiNoLoading = Axios.create(Api.defaults);
         // Validating password
         if (Api.password) {
             await Api.get('ping').then(
@@ -16,17 +16,19 @@ const actions: ActionTree<State, any> = {
         }
         // Load full status
         await Api.get("config").then(
-            response => {
-                context.commit('status', parseResponse(response.data))
-            }
+            response => context.commit('status', response.data)
         )
         context.commit('bootComplete')
     },
     status(context) {
-        Api.get("status").then(
-            response => {
-                context.commit('status', parseResponse(response.data))
-            }
+        // Dont update loading state
+        ApiNoLoading.get("status").then(
+            response => context.commit('status', response.data)
+        )
+    },
+    config(context) {
+        Api.get("config").then(
+            response => context.commit('status', response.data)
         )
     }
 

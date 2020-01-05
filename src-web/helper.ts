@@ -1,8 +1,8 @@
 /**
  * Parse key-value separate by tab
  */
-export function parseResponse(res: string) {
-    const result = {};
+export function parseResponse<T = any>(res: string): T {
+    const result = {} as any;
     res.split("\n").forEach(
         s => {
             const [key, value] = s.split("\t", 2);

@@ -30,6 +30,8 @@ void handle_status(String &response, HTTPMethod method)
     ESP.getHeapStats(&hfree, &hmax, &hfrag);
     response += "heap\t";
     response += String(hfree) + " " + String(hmax) + " " + String(hfrag);
+    response += "\nmode\t";
+    response += mode;
     if ((mode & WIFI_STA))
     {
         wl_status_t status = WiFi.status();
@@ -106,10 +108,12 @@ void handle_config(String &response, HTTPMethod method)
     {
         handle_config_get(response, method);
     }
-    else if( server_guard() )
+    else if (server_guard())
     {
         handle_config_set(response, method);
-    }else{
+    }
+    else
+    {
         response = "Disallowed";
     }
 }
@@ -134,6 +138,14 @@ void handle_wifi(String &response, HTTPMethod method)
     {
         WiFi.setAutoConnect(false);
         response = WiFi.disconnect(true);
+    }
+    else if (server.hasArg("ap"))
+    {
+        response = WiFi.enableAP(server.arg("ap").equals("true"));
+    }
+    else if (server.hasArg("sta"))
+    {
+        response = WiFi.enableSTA(server.arg("sta").equals("true"));
     }
 }
 

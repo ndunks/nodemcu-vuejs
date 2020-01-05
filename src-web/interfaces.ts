@@ -4,12 +4,6 @@ export interface Popup {
     message: string
 }
 
-export interface StatusRaw {
-    heap: string //	45776 45544 1
-    status: string // number
-    rssi: string // number
-    ap_clients: string // number
-}
 
 export interface ConfigRaw {
     heap: string
@@ -27,9 +21,11 @@ export interface ConfigRaw {
     ap_clients: string
 }
 
+export type StatusRaw = Pick<ConfigRaw, 'heap' | 'mode' | 'status' | 'rssi' | 'ap_clients'>
+
 // Config/Status type guad
 export function isConfigRaw(raw: ConfigRaw | StatusRaw): raw is ConfigRaw {
-    return (raw as ConfigRaw).mode !== undefined;
+    return (raw as ConfigRaw).hostname !== undefined;
 }
 
 /*
@@ -90,8 +86,6 @@ export interface Config {
     ap_clients: number
 
 }
-
-export type StatusCheap = Pick<Config, 'heap' | 'status' | 'rssi' | 'ap_clients'>
 
 export interface Status extends Config {
 
