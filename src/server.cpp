@@ -36,11 +36,23 @@ void server_begin()
     }
     server.addHandler(&handler);
     server.serveStatic("/", SPIFFS, "/", "public, max-age=86400");
-    // Todo: how to pass null reffs?
-    //server.onNotFound(reinterpret_cast<ESP8266WebServer::THandlerFunction>(handle_index));
-    //server.onNotFound((std::function<void()>)handle_index);
+
     server.onNotFound([]() {
-        handle_index(*((String *)NULL), server.method());
+        String host = server.hostHeader();
+        Serial.printf("Not found: %s %s\n", host.c_str(), server.uri().c_str());
+        if (host.length() && (host.equalsIgnoreCase(WiFi.hostname()) ||
+                              host.equals(WiFi.localIP().toString()) ||
+                              host.equals(WiFi.softAPIP().toString())))
+        {
+            Serial.println("SPA");
+            handle_index(*((String *)NULL), server.method());
+        }
+        else
+        {
+            server.sendHeader("Location", "http://" + WiFi.hostname());
+            server.send(302, "text/plain");
+            Serial.println("Redirected");
+        }
     });
     server.begin();
 }

@@ -28,7 +28,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title> {{ title }} {{ status.hostname }} </v-toolbar-title>
       <v-spacer />
-      <v-toolbar-items>
+      <v-toolbar-items v-if="login">
         <v-dialog max-width="500" ref="connectDialog">
           <template #activator="{on}">
             <v-btn

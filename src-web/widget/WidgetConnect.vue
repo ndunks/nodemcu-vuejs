@@ -8,7 +8,12 @@
         <v-icon>refresh</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-list-item v-for="wifi in wifiList" :key="wifi.ssid" :disabled="loading">
+    <v-list-item
+      v-for="wifi in wifiList"
+      :key="wifi.ssid"
+      :disabled="loading"
+      @click="click(wifi)"
+    >
       <v-list-item-avatar>
         <v-progress-circular :value="wifi.signal" color="primary">
           {{ wifi.signal }}
@@ -18,24 +23,15 @@
         <v-list-item-title v-text="wifi.ssid" />
         <v-list-item-subtitle v-text="wifi.security" />
       </v-list-item-content>
-      <v-list-item-action>
-        <v-btn
-          v-if="status.isConnected && status.ssid == wifi.ssid"
-          @click="disconnect(wifi)"
-          text
-          color="error"
-        >
-          Disconnect
-        </v-btn>
-        <v-btn v-else text color="success" @click="connect(wifi)">
-          Connect
-        </v-btn>
+      <v-list-item-action v-if="isConnected(wifi)" class="success--text">
+        Connected
       </v-list-item-action>
     </v-list-item>
     <DialogConfirm
       :message="dialogMessage"
       :title="dialogTitle"
       :input-message="dialogInput"
+      input-type="password"
       v-model="dialogActions"
     />
   </v-card>
@@ -49,6 +45,7 @@ import { mapState } from 'vuex';
 import DialogConfirm from "@/dialog/DialogConfirm.vue";
 
 @Component({
+  components: { DialogConfirm },
   computed: mapState(['loading', 'status'])
 })
 export default class WidgetConnect extends Vue {
@@ -59,6 +56,10 @@ export default class WidgetConnect extends Vue {
   wifiList: Wifi[] = []
   // Typing helper
   status: Status
+
+  isConnected(wifi: Wifi) {
+    return this.status.isConnected && this.status.ssid == wifi.ssid
+  }
 
   scan() {
     Api.get("scan").then(
@@ -83,6 +84,13 @@ export default class WidgetConnect extends Vue {
     )
   }
 
+  click(wifi: Wifi) {
+    if (this.isConnected(wifi)) {
+      this.disconnect(wifi)
+    } else {
+      this.connect(wifi)
+    }
+  }
   connect(wifi: Wifi) {
     const action = async (pass?: string) => {
       await Api.get('wifi', {
@@ -95,7 +103,7 @@ export default class WidgetConnect extends Vue {
       this.$emit('done');
     }
 
-    if (!this.status.isConnected) {
+    if (!this.status.isConnected && wifi.security == 'none') {
       return action()
     }
     if (wifi.security != 'none') {

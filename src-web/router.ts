@@ -22,7 +22,6 @@ const routes = [
     path: '/dash',
     component: Dashboard,
     meta: {
-      title: 'Dashboard',
       icon: 'home',
     }
   },

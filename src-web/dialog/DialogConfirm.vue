@@ -8,6 +8,7 @@
           autofocus
           autocomplete="off"
           v-model="inputValue"
+          :type="inputType"
           :label="inputMessage"
         />
       </v-card-text>
@@ -41,6 +42,9 @@ export default class DialogConfirm extends Vue {
 
   @Prop({ type: String, default: null })
   inputMessage: string
+
+  @Prop({ type: String, default: "text" })
+  inputType: string
 
   @Prop({ type: String, default: "" })
   message: string
