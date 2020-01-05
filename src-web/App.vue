@@ -50,9 +50,6 @@
         </v-row>
       </v-container>
     </v-content>
-    <v-footer color="indigo" app>
-      <span class="white--text">&copy; 2020</span>
-    </v-footer>
     <div class="stacked-snackbar">
       <v-snackbar
         v-for="popup in popups"

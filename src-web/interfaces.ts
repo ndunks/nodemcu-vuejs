@@ -96,6 +96,7 @@ export type StatusCheap = Pick<Config, 'heap' | 'status' | 'rssi' | 'ap_clients'
 export interface Status extends Config {
 
     signal?: number // converted from 100 + rssi (rssi is negative)
+    isConnected: boolean // from status 
     modeStr: string
     statusStr?: string
     isApMode: boolean // bitwise check from mode

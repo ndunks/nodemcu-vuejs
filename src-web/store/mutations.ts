@@ -56,6 +56,7 @@ const mutations: {
         state.status.rssi = parseInt(payload.rssi)
         state.status.signal = 100 + parseInt(payload.rssi)
         state.status.ap_clients = parseInt(payload.ap_clients)
+        state.status.isConnected = state.status.status == WifiStatus.Connected
 
         if (!isConfigRaw(payload))
             return;

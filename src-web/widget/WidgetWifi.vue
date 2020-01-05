@@ -1,9 +1,14 @@
 <template>
   <v-card>
     <v-toolbar short flat>
-      <v-toolbar-title>WiFi</v-toolbar-title>
+      <v-toolbar-title>
+        WiFi
+        <span class="subtitle-1">
+          Mode: {{ status.modeStr }}
+        </span>
+      </v-toolbar-title>
       <v-spacer />
-      <v-dialog max-width="500">
+      <v-dialog max-width="500" ref="dialog">
         <template #activator="{on}">
           <v-btn v-on="on" @click="scan" text color="primary">
             Scan WiFi
@@ -45,30 +50,73 @@
         </v-card>
       </v-dialog>
     </v-toolbar>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>Mode</v-list-item-title>
-        <v-list-item-subtitle>
-          {{ status.modeStr }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
+
+    <v-subheader>Station Info</v-subheader>
     <template v-if="status.isStaMode">
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>SSID</v-list-item-title>
+          <v-list-item-subtitle>
+            {{ status.ssid }}
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title>Status</v-list-item-title>
           <v-list-item-subtitle>
-            {{ status.statusStr }} {{ status.ssid }}
+            {{ status.statusStr }}
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item v-if="status.isConnected">
+        <v-list-item-content>
+          <v-list-item-title>Signal</v-list-item-title>
+          <v-list-item-subtitle>
+            <v-progress-circular :value="status.signal" color="primary">
+              {{ status.signal }}
+            </v-progress-circular>
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>IP</v-list-item-title>
+          <v-list-item-subtitle>
+            {{ status.ip }}
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>Gateway</v-list-item-title>
+          <v-list-item-subtitle>
+            {{ status.gateway }}
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </template>
+    <v-list-item v-else @click="$refs.dialog.isActive = true">
+      <v-list-item-content>
+        <v-list-item-title>Connect to WiFi</v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
+
+    <v-subheader>Access Point Info</v-subheader>
     <template v-if="status.isApMode">
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title>SSID</v-list-item-title>
           <v-list-item-subtitle>
             {{ status.ap_ssid }}
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>IP</v-list-item-title>
+          <v-list-item-subtitle>
+            {{ status.ap_ip }}
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -89,6 +137,11 @@
         </v-list-item-content>
       </v-list-item>
     </template>
+    <v-list-item v-else>
+      <v-list-item-content>
+        <v-list-item-title>Enable Access Point</v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
   </v-card>
 </template>
 <script lang="ts">
