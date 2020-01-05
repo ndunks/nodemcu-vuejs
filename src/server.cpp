@@ -42,10 +42,11 @@ void server_begin()
         Serial.printf("Not found: %s %s\n", host.c_str(), server.uri().c_str());
         if (host.length() && (host.equalsIgnoreCase(WiFi.hostname()) ||
                               host.equals(WiFi.localIP().toString()) ||
-                              host.equals(WiFi.softAPIP().toString())))
+                              host.equals(WiFi.softAPIP().toString()) ||
+                              server.uri().endsWith("generate_204")))
         {
             Serial.println("SPA");
-            handle_index(*((String *)NULL), server.method());
+            handle_index(*((String *)&emptyString), server.method());
         }
         else
         {
